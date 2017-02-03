@@ -37,6 +37,17 @@ namespace RegattaSailorAPI.Controllers
             return Ok(divisionModel);
         }
 
+        // GET: api/Division/5/Yachts
+        [Route("api/Division/{id}/Yachts")]
+        [HttpGet]
+        public List<YachtModel> GetDivisionYachts(Guid id)
+        {
+            var divisionModel = db.Divisions.Include("Yachts")
+                .Single(d => d.Id == id);
+
+            return divisionModel.Yachts;
+        }
+
         // PUT: api/Division/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutDivisionModel(Guid id, DivisionModel divisionModel)
@@ -89,6 +100,56 @@ namespace RegattaSailorAPI.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        // PUT: api/Division/5/Yachts
+        [Route("api/Division/{id}/Yachts")]
+        [HttpPut]
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutDivisionModel(Guid id, [FromBody] YachtModel[] yachtModelList)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            DivisionModel division = db.Divisions.Include("Yachts")
+                .Single(d => d.Id == id);
+
+            var guidList = new List<Guid>();
+
+            foreach (var yacht in yachtModelList)
+            {
+                guidList.Add(yacht.Id);
+            }
+
+            var yachts = db.Yachts
+                .Where(y => guidList.Contains(y.Id))
+                .ToList();
+
+            division.Yachts.RemoveAll(y => !guidList.Contains(y.Id));
+            foreach (var yacht in yachts)
+            {
+                division.Yachts.Add(yacht);
+            }
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DivisionModelExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
+        // PATCH: api/Division/5
         public IHttpActionResult PatchDivisionModel(Guid id, DivisionModel divisionModel)
         {
             if (!ModelState.IsValid)
@@ -168,6 +229,55 @@ namespace RegattaSailorAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = divisionModel.Id }, divisionModel);
         }
 
+        // POST: api/Division/5/Yachts
+        [Route("api/Division/{id}/Yachts")]
+        [HttpPost]
+        [ResponseType(typeof(DivisionModel))]
+        public IHttpActionResult PostDivisionModel(Guid id, Guid[] yachtIdList)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            DivisionModel division = db.Divisions.Include("Yachts")
+                .Single(d => d.Id == id);
+
+            var guidList = new List<Guid>();
+
+            foreach (var yacht in division.Yachts)
+            {
+                guidList.Add(yacht.Id);
+            }
+
+            foreach (var yachtModelId in yachtIdList)
+            {
+                if (!guidList.Contains(yachtModelId))
+                {
+                    var yacht = db.Yachts
+                        .Where(y => y.Id == yachtModelId)
+                        .FirstOrDefault();
+                    division.Yachts.Add(yacht);
+                }
+            }
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!DivisionModelExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+
         // DELETE: api/Division/5
         [ResponseType(typeof(DivisionModel))]
         public IHttpActionResult DeleteDivisionModel(Guid id)
@@ -184,6 +294,22 @@ namespace RegattaSailorAPI.Controllers
             return Ok(divisionModel);
         }
 
+        // DELETE: api/Division/5/Yachts/3
+        [Route("api/Division/{id}/Yachts/{yachtId}")]
+        [HttpDelete]
+        public IHttpActionResult DeleteDivisionModel(Guid id, Guid yachtId)
+        {
+            DivisionModel divisionModel = db.Divisions.Include("Yachts")
+                .Single(d => d.Id == id);
+
+            var yacht = db.Yachts
+                .Where(y => y.Id == yachtId)
+                .FirstOrDefault();
+            divisionModel.Yachts.Remove(yacht);
+            db.SaveChanges();
+
+            return Ok(divisionModel);
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)
