@@ -5,6 +5,7 @@ using System.Web;
 using System.Device.Location;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace RegattaSailorAPI.Models
 {
@@ -27,6 +28,7 @@ namespace RegattaSailorAPI.Models
         [DataMember]
         public double Length { get; set; }
         public virtual RaceModel Race { get; set; }
+        [DataMember]
         public List<LegResultModel> LegResults { get; set; }
     }
 }

@@ -28,7 +28,8 @@ namespace RegattaSailorAPI.Controllers
         [ResponseType(typeof(DivisionModel))]
         public IHttpActionResult GetDivisionModel(Guid id)
         {
-            DivisionModel divisionModel = db.Divisions.Find(id);
+            DivisionModel divisionModel = db.Divisions.Include(d => d.Yachts)
+                .Single(d => d.Id == id);
             if (divisionModel == null)
             {
                 return NotFound();

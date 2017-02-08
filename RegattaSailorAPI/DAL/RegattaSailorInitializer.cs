@@ -50,6 +50,14 @@ namespace RegattaSailorAPI.DAL
             legs.ForEach(s => context.RaceLegs.Add(s));
             context.SaveChanges();
 
+            var legResults = new List<LegResultModel>
+            {
+                new LegResultModel {Id = Guid.Parse("9e26a483-cb18-477e-9493-8ed86cd76cc2"), Yacht = yachts[1], Leg = legs[0], StartTime = (new DateTime(2017, 2, 1, 10, 00, 00)), EndTime = (new DateTime(2017, 2, 1, 18, 42, 17))}
+            };
+
+            legResults.ForEach(r => context.LegResults.Add(r));
+            context.SaveChanges();
+
             //var courses = new List<Course>
             //{
             //new Course{CourseID=1050,Title="Chemistry",Credits=3,},
