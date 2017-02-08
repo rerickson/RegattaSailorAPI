@@ -39,7 +39,7 @@ namespace RegattaSailorAPI.Controllers
         public IHttpActionResult GetRaceLegModelResults(Guid id)
         {
             RaceLegModel raceLegModel = db.RaceLegs
-                .Include(l => l.LegResults)
+                .Include(l => l.LegResults.Select(lr=>lr.Yacht))
                 .Single(l => l.Id == id);
             if (raceLegModel == null)
             {
@@ -49,22 +49,37 @@ namespace RegattaSailorAPI.Controllers
             return Ok(raceLegModel.LegResults);
         }
 
-        // PUT: api/RaceLeg/5
-        [ResponseType(typeof(void))]
 
-        public IHttpActionResult PutRaceLegModel(Guid id, RaceLegModel raceLegModel)
+        // PATCH: api/RaceLeg/5
+        public IHttpActionResult PatchRaceLegModel(Guid id, RaceLegModel raceLegModel)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != raceLegModel.Id)
-            {
-                return BadRequest();
-            }
+            raceLegModel.Id = id;
+            db.RaceLegs.Attach(raceLegModel);
+            var raceLeg = db.RaceLegs
+                .Single(d => d.Id == raceLegModel.Id);
 
-            db.Entry(raceLegModel).State = EntityState.Modified;
+            DbEntityEntry entry = db.Entry(raceLegModel);
+            foreach (var propertyName in entry.OriginalValues.PropertyNames)
+            {
+                if (propertyName != "LegResults" && propertyName != "Id")
+                {
+                    var original = entry.GetDatabaseValues().GetValue<object>(propertyName);
+                    var current = entry.CurrentValues.GetValue<object>(propertyName);
+
+
+
+                    if (!object.Equals(original, current))
+                    {
+
+                        entry.Property(propertyName).IsModified = true;
+                    }
+                }
+            }
 
             try
             {
@@ -93,7 +108,7 @@ namespace RegattaSailorAPI.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            raceLegModel.Id = Guid.NewGuid();
             db.RaceLegs.Add(raceLegModel);
 
             try
