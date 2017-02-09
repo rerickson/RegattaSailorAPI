@@ -276,7 +276,7 @@ namespace RegattaSailorAPI.Controllers
                     throw;
                 }
             }
-            return StatusCode(HttpStatusCode.NoContent);
+            return StatusCode(HttpStatusCode.Created);
         }
 
         // DELETE: api/Division/5

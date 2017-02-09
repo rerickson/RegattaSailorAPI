@@ -130,6 +130,57 @@ namespace RegattaSailorAPI.Controllers
             return CreatedAtRoute("DefaultApi", new { id = raceLegModel.Id }, raceLegModel);
         }
 
+        // POST: api/RaceLeg/5/Results
+        [ResponseType(typeof(LegResultModel))]
+        [Route("api/RaceLeg/{id}/Results", Name ="Results")]
+        [HttpPost]
+        public IHttpActionResult PostLegResultBodyModel(Guid id, [FromBody] LegResultBodyModel legResultBodyModel)
+        {
+            var legResultModel = new LegResultModel();
+            var raceLegModel = db.RaceLegs
+                .Include(l => l.LegResults.Select(lr => lr.Yacht))
+                .Single(l => l.Id == id);
+            var YachtList = raceLegModel.LegResults.Select(lr => lr.Yacht).ToList();
+            var YachtIdList = YachtList.Select(y => y.Id);
+
+            if (YachtIdList.Contains(legResultBodyModel.YachtId))
+            {
+                return Conflict();
+            }
+
+            legResultModel.Id = Guid.NewGuid();
+            legResultModel.Leg = db.RaceLegs.Find(id);
+            legResultModel.Yacht = db.Yachts.Find(legResultBodyModel.YachtId);
+            legResultModel.StartTime = legResultBodyModel.StartTime;
+            legResultModel.EndTime = legResultBodyModel.EndTime;
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            db.LegResults.Add(legResultModel);
+
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                if (RaceLegModelExists(legResultModel.Id))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return CreatedAtRoute("Results", new { id = legResultModel.Id }, legResultModel);
+        }
+
         // DELETE: api/RaceLeg/5
         [ResponseType(typeof(RaceLegModel))]
         public IHttpActionResult DeleteRaceLegModel(Guid id)

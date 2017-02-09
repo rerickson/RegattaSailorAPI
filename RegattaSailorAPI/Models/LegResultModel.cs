@@ -5,6 +5,11 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
+using RegattaSailorAPI.DAL;
+using RegattaSailorAPI.Models;
+using System.Data;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 
 namespace RegattaSailorAPI.Models
 {
@@ -15,7 +20,7 @@ namespace RegattaSailorAPI.Models
         [DataMember]
         public Guid Id { get; set; }
         [DataMember]
-        public Guid YachtId
+          public Guid YachtId
         {
             get { return Yacht.Id; }
         }
@@ -25,5 +30,6 @@ namespace RegattaSailorAPI.Models
         public DateTime? EndTime { get; set; }
         public virtual RaceLegModel Leg { get; set; }
         public virtual YachtModel Yacht { get; set; }
+
     }
 }

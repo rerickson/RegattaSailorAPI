@@ -234,6 +234,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\DivisionModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\LegResultBodyModel.cs" />
     <Compile Include="Models\LegResultModel.cs" />
     <Compile Include="Models\RaceLegModel.cs" />
     <Compile Include="Models\RaceModel.cs" />
