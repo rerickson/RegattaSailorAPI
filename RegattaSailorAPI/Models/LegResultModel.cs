@@ -1,15 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Web;
-using RegattaSailorAPI.DAL;
-using RegattaSailorAPI.Models;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 
 namespace RegattaSailorAPI.Models
 {

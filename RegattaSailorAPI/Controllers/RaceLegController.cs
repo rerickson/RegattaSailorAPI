@@ -5,7 +5,6 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using RegattaSailorAPI.DAL;
@@ -140,7 +139,7 @@ namespace RegattaSailorAPI.Controllers
             var raceLegModel = db.RaceLegs
                 .Include(l => l.LegResults.Select(lr => lr.Yacht))
                 .Single(l => l.Id == id);
-            var YachtList = raceLegModel.LegResults.Select(lr => lr.Yacht).ToList();
+            var YachtList = raceLegModel.LegResults.Select(lr => lr.Yacht);
             var YachtIdList = YachtList.Select(y => y.Id);
 
             if (YachtIdList.Contains(legResultBodyModel.YachtId))
@@ -197,7 +196,7 @@ namespace RegattaSailorAPI.Controllers
             return Ok(raceLegModel);
         }
 
-        // DELETE: api/RaceLeg/5/Results
+        // DELETE: api/RaceLeg/5/Results/5
         [ResponseType(typeof(LegResultModel))]
         [Route("api/RaceLeg/{id}/Results/{resultId}", Name = "DeleteResults")]
         [HttpDelete]
