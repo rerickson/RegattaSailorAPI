@@ -197,6 +197,30 @@ namespace RegattaSailorAPI.Controllers
             return Ok(raceLegModel);
         }
 
+        // DELETE: api/RaceLeg/5/Results
+        [ResponseType(typeof(LegResultModel))]
+        [Route("api/RaceLeg/{id}/Results/{resultId}", Name = "DeleteResults")]
+        [HttpDelete]
+        public IHttpActionResult DeleteLegResultModel(Guid id, Guid resultId)
+        {
+            RaceLegModel raceLegModel = db.RaceLegs
+                .Include(rl => rl.LegResults)
+                .Single(rl => rl.Id == id);
+
+            if (raceLegModel == null)
+            {
+                return NotFound();
+            }
+
+            LegResultModel legResultModel = db.LegResults
+                .Include(lr => lr.Yacht)
+                .Single(lr => lr.Id == resultId);
+            raceLegModel.LegResults.Remove(legResultModel);
+            db.SaveChanges();
+
+            return Ok(legResultModel);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
