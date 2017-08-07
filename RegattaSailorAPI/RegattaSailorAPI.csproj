@@ -219,7 +219,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RaceController.cs" />
     <Compile Include="Controllers\RaceLegController.cs" />
-    <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="DAL\RegattaSailorContext.cs" />
     <Compile Include="DAL\RegattaSailorInitializer.cs" />
     <Compile Include="Global.asax.cs">
